@@ -282,6 +282,44 @@ describe('question.routes', () => {
       })
     })
 
+    describe('Follow', () => {
+      it('displays following status', async () => {
+        let wrapper
+        const user = FactoryUser()
+        const question = FactoryQuestionItem({
+          subscribers: [user.userName],
+        })
+        const mockFetchQuestionBySlug = jest.fn().mockResolvedValue(question)
+        useQuestionStore.mockReturnValue({
+          ...mockQuestionStore,
+          activeUser: user,
+          fetchQuestionBySlug: mockFetchQuestionBySlug,
+        })
+
+        await act(async () => {
+          wrapper = (await renderFn(`/question/${question.slug}`, user)).wrapper
+        })
+
+        expect(wrapper.getByText('Following')).toBeInTheDocument()
+      })
+
+      it('supports follow behaviour', async () => {
+        let wrapper
+        const question = FactoryQuestionItem()
+        const mockFetchQuestionBySlug = jest.fn().mockResolvedValue(question)
+        useQuestionStore.mockReturnValue({
+          ...mockQuestionStore,
+          fetchQuestionBySlug: mockFetchQuestionBySlug,
+        })
+
+        await act(async () => {
+          wrapper = (await renderFn(`/question/${question.slug}`)).wrapper
+        })
+
+        expect(wrapper.getByText('Follow')).toBeInTheDocument()
+      })
+    })
+
     it('does not show Edit call to action', async () => {
       let wrapper
       mockActiveUser = FactoryUser()
