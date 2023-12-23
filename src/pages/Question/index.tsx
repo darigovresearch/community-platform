@@ -5,11 +5,17 @@ import {
   QuestionStore,
   QuestionStoreContext,
 } from 'src/stores/Question/question.store'
+import {
+  DiscussionStore,
+  DiscussionStoreContext,
+} from 'src/stores/Discussions/discussions.store'
 
 export const QuestionModuleContainer = () => {
   return (
     <QuestionStoreContext.Provider value={new QuestionStore()}>
-      <QuestionRoutes />
+      <DiscussionStoreContext.Provider value={new DiscussionStore()}>
+        <QuestionRoutes />
+      </DiscussionStoreContext.Provider>
     </QuestionStoreContext.Provider>
   )
 }
