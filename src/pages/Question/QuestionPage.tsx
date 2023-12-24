@@ -46,11 +46,10 @@ export const QuestionPage = () => {
 
       setIsLoading(false)
     }
-
     fetchQuestions()
 
     return () => {
-      setIsLoading(false)
+      setIsLoading(true)
     }
   }, [slug])
 
