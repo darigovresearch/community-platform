@@ -30,6 +30,7 @@ export const QuestionComments = ({
               onSubmit(comment)
               setComment('')
             }}
+            placeholder="Help out and leave a comment..."
             isLoggedIn={!!activeUser}
           />
         </Box>
