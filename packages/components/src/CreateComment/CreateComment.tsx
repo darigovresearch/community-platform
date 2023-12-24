@@ -53,6 +53,7 @@ export const CreateComment = (props: Props) => {
                 onChange={(event) => {
                   onChange && onChange(event.target.value)
                 }}
+                aria-label="Comment"
                 data-cy="comments-form"
                 placeholder="Leave your questions or feedback..."
                 sx={{

@@ -15,7 +15,9 @@ export const QuestionPage = () => {
   const discussionStore = useDiscussionStore()
   const [isLoading, setIsLoading] = useState(true)
   const [question, setQuestion] = useState<IQuestion.Item | undefined>()
-  const [discussion, setDiscussion] = useState<IDiscussion.Item | undefined>(undefined) // [TODO
+  const [discussion, setDiscussion] = useState<IDiscussion.Item | undefined>(
+    undefined,
+  ) // [TODO
   const [isEditable, setIsEditable] = useState(false)
   const [comments, setComments] = useState<IDiscussionComment[]>([])
 
@@ -107,9 +109,19 @@ export const QuestionPage = () => {
             </Box>
           </Card>
           <QuestionComments
-            discussionObj={discussion} 
-            discussionStore={discussionStore}
             comments={comments}
+            activeUser={store.activeUser}
+            onSubmit={async (comment: string) => {
+              if (!comment) {
+                return
+              }
+
+              // Trigger update without waiting
+              const res = await discussionStore.addComment(discussion, comment)
+
+              setDiscussion(res)
+              setComments(res?.comments || [])
+            }}
           />
         </>
       ) : null}

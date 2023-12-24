@@ -260,6 +260,7 @@ describe('question.routes', () => {
     it('renders the question single page', async () => {
       let wrapper
       const question = FactoryQuestionItem()
+      const activeUser = FactoryUser({})
       const mockFetchQuestionBySlug = jest.fn().mockResolvedValue(question)
       const discussionComment = FactoryDiscussionComment({
         text: faker.lorem.words(2),
@@ -273,14 +274,29 @@ describe('question.routes', () => {
       )
       useQuestionStore.mockReturnValue({
         ...mockQuestionStore,
+        activeUser,
         fetchQuestionBySlug: mockFetchQuestionBySlug,
       })
+      // Smell, this is reimplementation of the store method, maybe we should mock the store
+      // depdendencies instead, so we are less coupled to the implementation.
+      const mockDiscussionStoreAddComment = jest
+        .fn()
+        .mockImplementation((discussionObj, newCommentText) => {
+          discussionObj.comments.push(
+            FactoryDiscussionComment({
+              text: `Mocked store method: ${newCommentText}`,
+            }),
+          )
+          return discussionObj
+        })
       useDiscussionStore.mockReturnValue({
         fetchOrCreateDiscussionBySource: mockfetchOrCreateDiscussionBySource,
+        addComment: mockDiscussionStoreAddComment,
       })
 
       await act(async () => {
-        wrapper = renderFn(`/questions/${question.slug}`).wrapper
+        const { wrapper: wrap } = renderFn(`/questions/${question.slug}`)
+        wrapper = wrap
         expect(wrapper.getByText(/loading/)).toBeInTheDocument()
       })
 
@@ -293,18 +309,31 @@ describe('question.routes', () => {
           ),
         ).toBeInTheDocument()
         expect(mockFetchQuestionBySlug).toBeCalledWith(question.slug)
-
-        // Loads comments
-        expect(mockfetchOrCreateDiscussionBySource).toBeCalledWith(
-          question._id,
-          'question',
-        )
-
-        expect(wrapper.getByText(discussionComment.text)).toBeInTheDocument()
-
-        // Support adding comments
-        expect(wrapper.getByText('Leave a comment')).toBeInTheDocument()
       })
+
+      // Loads comments
+      expect(mockfetchOrCreateDiscussionBySource).toBeCalledWith(
+        question._id,
+        'question',
+      )
+
+      expect(wrapper.getByText(discussionComment.text)).toBeInTheDocument()
+
+      // Supports adding comments
+      expect(wrapper.getByText('Leave a comment')).toBeInTheDocument()
+      expect(wrapper.getByLabelText('Comment')).toBeInTheDocument()
+      await userEvent.type(wrapper.getByLabelText('Comment'), 'New comment')
+
+      const submitButton = wrapper.getByText('Leave a comment')
+      await waitFor(() => {
+        submitButton.click()
+
+        expect(
+          wrapper.getByText('Mocked store method: New comment'),
+        ).toBeInTheDocument()
+      })
+
+      expect(mockDiscussionStoreAddComment).toHaveBeenCalled()
     })
 
     it('does not show Edit call to action', async () => {
