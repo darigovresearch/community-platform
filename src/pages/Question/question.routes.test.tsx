@@ -301,6 +301,9 @@ describe('question.routes', () => {
         )
 
         expect(wrapper.getByText(discussionComment.text)).toBeInTheDocument()
+
+        // Support adding comments
+        expect(wrapper.getByText('Leave a comment')).toBeInTheDocument()
       })
     })
 

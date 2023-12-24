@@ -15,6 +15,7 @@ export const QuestionPage = () => {
   const discussionStore = useDiscussionStore()
   const [isLoading, setIsLoading] = useState(true)
   const [question, setQuestion] = useState<IQuestion.Item | undefined>()
+  const [discussion, setDiscussion] = useState<IDiscussion.Item | undefined>(undefined) // [TODO
   const [isEditable, setIsEditable] = useState(false)
   const [comments, setComments] = useState<IDiscussionComment[]>([])
 
@@ -35,6 +36,7 @@ export const QuestionPage = () => {
               'question',
             )
           if (discussion) {
+            setDiscussion(discussion)
             setComments(discussion.comments)
           }
         }
@@ -104,7 +106,11 @@ export const QuestionPage = () => {
               )}
             </Box>
           </Card>
-          <QuestionComments comments={comments} />
+          <QuestionComments
+            discussionObj={discussion} 
+            discussionStore={discussionStore}
+            comments={comments}
+          />
         </>
       ) : null}
     </Box>
