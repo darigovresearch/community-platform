@@ -128,6 +128,10 @@ export class ResearchStore extends ModuleStore {
 
     let validResearches = filterModerableItems(researches, this.activeUser)
 
+    validResearches = validResearches.filter((research) => {
+      return research.researchStatus !== 'Archived'
+    })
+
     validResearches = this.filterSorterDecorator.search(
       validResearches,
       this.searchValue,
