@@ -38,6 +38,7 @@ import { PostingGuidelines, ResearchErrors, ResearchSubmitStatus } from './'
 
 import type { RouteComponentProps } from 'react-router'
 import type { IResearch } from 'src/models/research.models'
+import { SelectField } from 'src/common/Form/Select.field'
 
 const CONFIRM_DIALOG_MSG =
   'You have unsaved changes. Are you sure you want to leave this page?'
@@ -75,7 +76,14 @@ const calculatedFields = createDecorator({
 const ResearchForm = observer((props: IProps) => {
   const { formValues, parentType } = props
   const { create, update } = buttons.draft
-  const { categories, collaborators, description, tags, title } = overview
+  const {
+    categories,
+    collaborators,
+    description,
+    tags,
+    title,
+    researchStatus,
+  } = overview
 
   const store = useResearchStore()
   const [state, setState] = React.useState<IState>({
@@ -312,6 +320,24 @@ const ResearchForm = observer((props: IProps) => {
                                 name="collaborators"
                                 component={FieldInput}
                                 placeholder={collaborators.placeholder}
+                              />
+                            </Flex>
+                            <Flex sx={{ flexDirection: 'column' }} mb={3}>
+                              <ResearchFormLabel>
+                                {researchStatus.title}
+                              </ResearchFormLabel>
+                              <Field
+                                name="researchStatus"
+                                component={SelectField}
+                                placeholder={researchStatus.placeholder}
+                                options={[
+                                  {
+                                    label: 'In progress',
+                                    value: 'In progress',
+                                  },
+                                  { label: 'Complete', value: 'Complete' },
+                                  { label: 'Archived', value: 'Archived' },
+                                ]}
                               />
                             </Flex>
                           </Flex>
